@@ -1,0 +1,1203 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payless Shoes — Panel CRUD Granada</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #0b1220;
+      --accent: #ff6b35;
+      --accent-hover: #ff8a5b;
+      --muted: #98a0b3;
+      --glass: rgba(255,255,255,0.03);
+      --success: #34d399;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e6eef8;
+      --sidebar-width: 300px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #071029 0%, #0f1724 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      min-height: 100vh;
+      gap: 24px;
+      padding: 24px;
+    }
+    
+    /* Sidebar mejorado */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(2,6,23,0.8);
+      border: 1px solid rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #071022;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+    }
+    
+    .brand-text h1 {
+      font-size: 18px;
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .brand-text p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+    }
+    
+    nav li {
+      margin-bottom: 8px;
+    }
+    
+    .nav-section-title {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 16px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .branch-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: var(--glass);
+      color: inherit;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .branch-btn:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .branch-name {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .branch-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+    
+    .quick-actions {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .section-title {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--glass);
+      color: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    
+    .btn:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-2px);
+    }
+    
+    .btn i {
+      font-size: 16px;
+    }
+    
+    /* Main content mejorado */
+    main {
+      padding: 24px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 8px 24px rgba(2,6,23,0.6);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+    
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    
+    .header-title h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
+    .header-title .muted {
+      margin-top: 4px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .search {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      position: relative;
+    }
+    
+    .search i {
+      position: absolute;
+      left: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .search input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 12px 10px 36px;
+      border-radius: 10px;
+      color: inherit;
+      width: 280px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .search input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(255,107,53,0.2);
+    }
+    
+    .btn-refresh {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+    
+    .btn-refresh:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    
+    /* Cards mejoradas */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    
+    .card {
+      padding: 20px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+    }
+    
+    .card h3 {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .card p {
+      margin: 8px 0 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    
+    /* Panel principal */
+    .panel {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .left {
+      flex: 2;
+    }
+    
+    .right {
+      flex: 1;
+    }
+    
+    /* Tabla mejorada */
+    .table-container {
+      border-radius: 12px;
+      overflow: hidden; /* mantenemos overflow hidden en contenedor principal */
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.02);
+      position: relative; /* importante para los indicadores visuales */
+    }
+
+    /* --- ADICIÓN: wrapper que habilita scroll lateral en móvil --- */
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch; /* momentum scroll en iOS */
+      scrollbar-width: thin; /* Firefox */
+      max-width: 100%;
+      position: relative;
+    }
+
+    /* Forzar ancho mínimo para que aparezca scroll cuando la pantalla es estrecha */
+    .table-scroll table {
+      width: 100%;
+      min-width: 760px; /* ajústalo si cambias columnas */
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+
+    /* Indicadores visuales (gradientes) para sugerir overflow */
+    .table-scroll::after,
+    .table-scroll::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 36px;
+      pointer-events: none;
+      transition: opacity .25s;
+      opacity: 0;
+      z-index: 5;
+    }
+    .table-scroll::after {
+      right: 0;
+      background: linear-gradient(90deg, rgba(15,23,36,0), rgba(15,23,36,0.6));
+    }
+    .table-scroll::before {
+      left: 0;
+      background: linear-gradient(270deg, rgba(15,23,36,0), rgba(15,23,36,0.6));
+    }
+    .table-scroll.has-right::after { opacity: 1; }
+    .table-scroll.has-left::before { opacity: 1; }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 14px;
+    }
+    
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      background: rgba(255,255,255,0.03);
+    }
+    
+    tbody tr {
+      transition: all 0.2s ease;
+    }
+    
+    tbody tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+    
+    .stock-low {
+      color: var(--warning);
+      font-weight: 600;
+    }
+    
+    .stock-critical {
+      color: var(--danger);
+      font-weight: 600;
+    }
+    
+    /* Botones de acción en tabla */
+    .btn-action {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .btn-edit {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    
+    .btn-edit:hover {
+      background: rgba(59, 130, 246, 0.2);
+    }
+    
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+    
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+    
+    /* Formulario mejorado */
+    .form-container {
+      padding: 20px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .form-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .form-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .form-row.double {
+      flex-direction: row;
+    }
+    
+    .form-row.double > * {
+      flex: 1;
+    }
+    
+    .form-label {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    .form-input {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      color: inherit;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(255,107,53,0.2);
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn-primary {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: #071022;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      justify-content: center;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255,107,53,0.4);
+    }
+    
+    .btn-secondary {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      justify-content: center;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .msg {
+      height: 18px;
+      font-size: 13px;
+      margin-top: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+    
+   /* Responsive */
+    @media (max-width: 1200px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .app {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+      }
+      
+      .sidebar {
+        order: 2;
+        margin-top: 0;
+      }
+      
+      .search input {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .panel {
+        flex-direction: column;
+      }
+      
+      .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .search {
+        width: 100%;
+      }
+      
+      .form-row.double {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        padding: 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .app {
+        padding: 12px;
+      }
+      
+      main, .sidebar {
+        padding: 16px;
+      }
+      
+      .card p {
+        font-size: 24px;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .table-scroll table { min-width: 620px; } /* ajuste para pantallas muy pequeñas */
+    }
+
+    /* === ADICIÓN ÚNICA: reglas para DESKTOP (≥993px) - solo aquí adaptamos la columna derecha === */
+    @media (min-width: 993px) {
+      /* permitir que la columna izquierda se encoja correctamente */
+      .left {
+        flex: 1 1 auto;
+        min-width: 0; /* esencial para que el contenido no obligue al contenedor a crecer y recorte la derecha */
+      }
+      /* ancho fijo razonable para el formulario en desktop (evita que quede recortado) */
+      .right {
+        flex: 0 0 419px;
+        min-width: 0;
+        max-width: 419px;
+      }
+      /* permitir que main no oculte el desbordamiento del formulario en desktop */
+      main {
+        overflow: visible;
+      }
+      /* en desktop la tabla debe intentar adaptarse al espacio disponible y no forzar ancho excesivo */
+      .table-scroll {
+        min-width: 0;
+      }
+      .table-scroll table {
+        min-width: 0;
+        width: 100%;
+        table-layout: fixed; /* evita que la tabla empuje la columna derecha */
+      }
+      .form-container {
+        box-sizing: border-box;
+        max-width: 100%;
+      }
+    }
+    /* === fin adaptación desktop === */
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">PS</div>
+        <div class="brand-text">
+          <h1>Payless SUC Granada</h1>
+          <p>CRUD — Granada</p>
+        </div>
+      </div>
+      
+      <nav>
+        <div class="nav-section-title">
+          <i class="fas fa-store"></i>
+          Sucursales
+        </div>
+        <ul>
+             <li>
+            <div class="branch-btn" data-branch="managua" onclick="window.location.href='https://proyect.site/'">
+              <div class="branch-name">
+                <div class="branch-status"></div>
+                <strong>Managua Central</strong>
+              </div>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </li>
+          <li>
+            <div class="branch-btn" data-branch="jinotepe" onclick="window.location.href='https://jinotepe.proyect.site/'">
+              <div class="branch-name">
+                <div class="branch-status"></div>
+                <strong>Jinotepe</strong>
+              </div>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </li>
+          <li>
+            <div class="branch-btn" data-branch="chontales" onclick="window.location.href='https://chontales.proyect.site/'">
+              <div class="branch-name">
+                <div class="branch-status"></div>
+                <strong>Chontales</strong>
+              </div>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </li>
+          <li>
+            <div class="branch-btn" data-branch="masaya" onclick="window.location.href='https://masaya.proyect.site/'">
+              <div class="branch-name">
+                <div class="branch-status"></div>
+                <strong>Masaya</strong>
+              </div>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="quick-actions">
+        <div class="section-title">
+          <i class="fas fa-bolt"></i>
+          Acciones rápidas
+        </div>
+        <button class="btn" onclick="downloadAll()">
+          <i class="fas fa-file-export"></i>
+          Exportar registros (CSV)
+        </button>
+        <button class="btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="main-header">
+        <div class="header-title">
+          <h2>Panel administrativo — Granada</h2>
+          <div class="muted">Gestión completa de productos (CRUD)</div>
+        </div>
+        <div class="controls">
+          <div class="search">
+            <i class="fas fa-search"></i>
+            <input id="searchInput" placeholder="Buscar por nombre, marca o tamaño" oninput="filterTable()" />
+          </div>
+          <button class="btn-refresh" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i>
+            Actualizar
+          </button>
+        </div>
+      </header>
+
+      <section class="cards">
+        <div class="card">
+          <h3><i class="fas fa-boxes"></i> Productos</h3>
+          <p id="countProducts">0</p>
+        </div>
+        <div class="card">
+          <h3><i class="fas fa-dollar-sign"></i> Valor total</h3>
+          <p id="totalValue">$0.00</p>
+        </div>
+        <div class="card">
+          <h3><i class="fas fa-exclamation-triangle"></i> Stock crítico (≤5)</h3>
+          <p id="stockCritical">0</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="left">
+          <!-- CRUD Table -->
+          <div class="table-container">
+            <!-- ADICIÓN: wrapper para habilitar scroll lateral en móvil -->
+            <div class="table-scroll" tabindex="0" aria-label="Tabla de productos. Desplazable horizontalmente">
+              <table id="recordsTable">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Marca</th>
+                    <th>Tamaño</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <aside class="right">
+          <!-- Create / Edit form -->
+          <div class="form-container">
+            <div class="form-header">
+              <h3><i class="fas fa-edit"></i> Crear / Editar producto</h3>
+            </div>
+            
+            <form id="productForm" onsubmit="return onSubmitForm(event)">
+              <div class="form-row">
+                <label class="form-label" for="f_name">Nombre del producto</label>
+                <input class="form-input" id="f_name" placeholder="Ej. Zapatos deportivos" required />
+              </div>
+              
+              <div class="form-row">
+                <label class="form-label" for="f_brand">Marca</label>
+                <input class="form-input" id="f_brand" placeholder="Ej. Nike, Adidas" required />
+              </div>
+              
+              <div class="form-row double">
+                <div>
+                  <label class="form-label" for="f_size">Tamaño</label>
+                  <input class="form-input" id="f_size" placeholder="42" type="number" min="0" required />
+                </div>
+                <div>
+                  <label class="form-label" for="f_price">Precio ($)</label>
+                  <input class="form-input" id="f_price" placeholder="59.99" type="number" step="0.01" min="0" required />
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <label class="form-label" for="f_stock">Stock</label>
+                <input class="form-input" id="f_stock" placeholder="50" type="number" min="0" required />
+              </div>
+
+              <div class="form-actions">
+                <button id="saveBtn" class="btn-primary" type="submit">
+                  <i class="fas fa-save"></i>
+                  Guardar
+                </button>
+                <button id="cancelEdit" class="btn-secondary" type="button" onclick="resetForm()">
+                  <i class="fas fa-times"></i>
+                  Cancelar
+                </button>
+              </div>
+
+              <div class="msg" id="formMsg"></div>
+            </form>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // CONFIG
+    const API_BASE = 'https://payless-api.vercel.app';
+    const RESOURCE = '/api/granada';
+    const STORAGE_AUTH = 'payless_auth_v1';
+
+    // state
+    let editingId = null;
+    let rowsCache = [];
+
+    // auth
+    const auth = JSON.parse(localStorage.getItem(STORAGE_AUTH));
+    const token = auth?.token;
+    if(!token) {
+      // no token -> volver al login
+      window.location.href = 'index.html';
+    }
+
+    // util: show messages
+    function showFormMsg(text, ok=true){
+      const el = document.getElementById('formMsg');
+      el.textContent = text;
+      el.style.color = ok ? 'var(--success)' : 'var(--danger)';
+    }
+    function showSideMsg(text, ok=true){
+      // Create a temporary message element if it doesn't exist
+      let msgEl = document.getElementById('sideMsg');
+      if (!msgEl) {
+        msgEl = document.createElement('div');
+        msgEl.id = 'sideMsg';
+        msgEl.style.cssText = 'position:fixed; top:20px; right:20px; padding:12px 16px; border-radius:8px; z-index:1000; font-size:14px;';
+        document.body.appendChild(msgEl);
+      }
+      
+      msgEl.textContent = text;
+      msgEl.style.background = ok ? 'var(--success)' : 'var(--danger)';
+      msgEl.style.color = 'white';
+      msgEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+      
+      setTimeout(()=> {
+        msgEl.textContent = '';
+        msgEl.style.background = 'transparent';
+        msgEl.style.boxShadow = 'none';
+      }, 4000);
+    }
+
+    // --- HTTP helpers ---
+    async function apiFetch(path, opts = {}) {
+      const headers = Object.assign({'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}, opts.headers || {});
+      const res = await fetch(API_BASE + path, Object.assign({}, opts, { headers }));
+      const text = await res.text().catch(()=>null);
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch(e){ data = text; }
+      if(!res.ok){
+        const msg = (data && data.message) || `Error ${res.status}`;
+        const err = new Error(msg);
+        err.status = res.status;
+        err.body = data;
+        throw err;
+      }
+      return data;
+    }
+
+    // --- CRUD actions ---
+    async function fetchRecords(){
+      try {
+        const data = await apiFetch(RESOURCE, { method: 'GET' });
+        // esperamos un array (lista de productos)
+        rowsCache = Array.isArray(data) ? data : (data?.items || []);
+        console.log('GET /granada ->', rowsCache);
+        return rowsCache;
+      } catch(err){
+        console.error('fetchRecords error', err);
+        showSideMsg('No se pudieron cargar los registros. Revisa tu token o login.', false);
+        return [];
+      }
+    }
+
+    async function createRecord(payload){
+      return await apiFetch(RESOURCE, { method: 'POST', body: JSON.stringify(payload) });
+    }
+
+    async function updateRecord(id, payload){
+      return await apiFetch(`${RESOURCE}/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(payload) });
+    }
+
+    async function deleteRecord(id){
+      return await apiFetch(`${RESOURCE}/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    }
+
+    // --- UI renderers ---
+    function renderTable(rows){
+      const tbody = document.querySelector('#recordsTable tbody');
+      tbody.innerHTML = '';
+      rows.forEach(r=>{
+        // support id variants
+        const id = r.id || r._id || r.docId || r.key || '';
+        const tr = document.createElement('tr');
+        
+        // Determine stock class for styling
+        let stockClass = '';
+        if (r.stock <= 5) stockClass = 'stock-critical';
+        else if (r.stock <= 15) stockClass = 'stock-low';
+        
+        tr.innerHTML = `
+          <td>${escapeHtml(r.name || '')}</td>
+          <td>${escapeHtml(r.brand || '')}</td>
+          <td>${escapeHtml(String(r.size ?? ''))}</td>
+          <td>$${Number(r.price ?? 0).toFixed(2)}</td>
+          <td class="${stockClass}">${Number(r.stock ?? 0)}</td>
+          <td>
+            <button class="btn-action btn-edit" onclick="onEdit('${id}')">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="btn-action btn-delete" onclick="onDelete('${id}')">
+              <i class="fas fa-trash"></i> Borrar
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('countProducts').innerText = rows.length;
+
+      // Actualiza indicadores de scroll (si existe la función creada por setupTableScroll)
+      if (typeof window.updateTableScrollIndicators === 'function') {
+        window.updateTableScrollIndicators();
+      }
+    }
+
+    function updateCards(rows){
+      const totalValue = rows.reduce((s,r) => s + Number(r.price || 0), 0);
+      const critical = rows.filter(r => Number(r.stock || 0) <= 5).length;
+      document.getElementById('totalValue').innerText = `$${totalValue.toFixed(2)}`;
+      document.getElementById('stockCritical').innerText = critical;
+    }
+
+    // --- Form handling ---
+    function resetForm(){
+      editingId = null;
+      document.getElementById('productForm').reset();
+      showFormMsg('');
+      document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Guardar';
+      document.getElementById('saveBtn').disabled = false;
+    }
+
+    function fillFormWith(record){
+      document.getElementById('f_name').value = record.name || '';
+      document.getElementById('f_brand').value = record.brand || '';
+      document.getElementById('f_size').value = record.size ?? '';
+      document.getElementById('f_price').value = record.price ?? '';
+      document.getElementById('f_stock').value = record.stock ?? '';
+      showFormMsg('');
+      document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+    }
+
+    async function onSubmitForm(e){
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('f_name').value.trim(),
+        brand: document.getElementById('f_brand').value.trim(),
+        size: Number(document.getElementById('f_size').value || 0),
+        price: Number(document.getElementById('f_price').value || 0),
+        stock: Number(document.getElementById('f_stock').value || 0)
+      };
+      // basic validation
+      if(!payload.name || !payload.brand){ 
+        showFormMsg('Nombre y Marca son obligatorios', false); 
+        return; 
+      }
+
+      document.getElementById('saveBtn').disabled = true;
+      document.getElementById('saveBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+      
+      try {
+        if(editingId){
+          await updateRecord(editingId, payload);
+          showFormMsg('Producto actualizado correctamente', true);
+        } else {
+          await createRecord(payload);
+          showFormMsg('Producto creado correctamente', true);
+        }
+        await refreshAndRender();
+        resetForm();
+      } catch(err){
+        console.error('save error', err);
+        showFormMsg(err.message || 'Error al guardar el producto', false);
+      } finally {
+        document.getElementById('saveBtn').disabled = false;
+        if (editingId) {
+          document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+        } else {
+          document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Guardar';
+        }
+      }
+      return false;
+    }
+
+    // --- actions from buttons ---
+    async function onEdit(id){
+      if(!id){ showSideMsg('Id no encontrado', false); return; }
+      // try find in cache
+      const rec = rowsCache.find(r => (r.id === id || r._id === id || String(r.docId) === id || r.key === id));
+      if(rec){
+        editingId = id;
+        fillFormWith(rec);
+        // Scroll to form
+        document.querySelector('.form-container').scrollIntoView({behavior: 'smooth', block: 'start'});
+        return;
+      }
+      // fallback: refetch single record (not required if API exposes GET /api/jinotepe/{id})
+      showSideMsg('Registro no encontrado en caché. Actualizando...', true);
+      await refreshAndRender();
+      onEdit(id);
+    }
+
+    async function onDelete(id){
+      if(!id){ showSideMsg('Id no encontrado', false); return; }
+      if(!confirm('¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.')) return;
+      try {
+        await deleteRecord(id);
+        showSideMsg('Producto eliminado correctamente', true);
+        await refreshAndRender();
+      } catch(err){
+        console.error('delete error', err);
+        showSideMsg(err.message || 'Error al eliminar el producto', false);
+      }
+    }
+
+    // --- helpers: refresh + render ---
+    async function refreshAndRender(){
+      const rows = await fetchRecords();
+      renderTable(rows);
+      updateCards(rows);
+    }
+
+    function refreshData(){ 
+      const refreshBtn = document.querySelector('.btn-refresh');
+      refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando';
+      
+      refreshAndRender().then(() => {
+        setTimeout(() => {
+          refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
+        }, 500);
+      });
+    }
+
+    // CSV export
+    async function downloadAll(){
+      const rows = await fetchRecords();
+      const header = ['name','brand','size','price','stock'];
+      const csv = [header.join(','), ...rows.map(r => `${escapeCsv(r.name)},${escapeCsv(r.brand)},${r.size||''},${r.price||0},${r.stock||0}`)].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'granada_products.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+
+    function logout(){ localStorage.removeItem(STORAGE_AUTH); window.location.href = 'index.html'; }
+
+    // search filter
+    function filterTable(){
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = rowsCache.filter(r=>{
+        const hay = `${r.name||''} ${r.brand||''} ${r.size||''}`.toLowerCase();
+        return hay.includes(q);
+      });
+      renderTable(filtered);
+      updateCards(filtered);
+    }
+
+    // safe helpers
+    function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+    function escapeCsv(s){ if(s==null) return ''; return `"${String(s).replaceAll('"','""')}"`; }
+
+    // --- ADICIÓN: setup para scroll lateral en móvil (drag, indicadores y teclado) ---
+    function setupTableScroll() {
+      const scrollEl = document.querySelector('.table-scroll');
+      if(!scrollEl) return;
+
+      // Actualiza indicadores basados en scrollLeft
+      function updateScrollIndicators() {
+        const maxScrollLeft = scrollEl.scrollWidth - scrollEl.clientWidth;
+        scrollEl.classList.toggle('has-right', scrollEl.scrollLeft < maxScrollLeft - 1);
+        scrollEl.classList.toggle('has-left', scrollEl.scrollLeft > 1);
+      }
+
+      // Exponer la función para invocarla después de renderTable
+      window.updateTableScrollIndicators = updateScrollIndicators;
+
+      // Inicial
+      updateScrollIndicators();
+
+      // Event listeners
+      scrollEl.addEventListener('scroll', updateScrollIndicators);
+      window.addEventListener('resize', updateScrollIndicators);
+
+      // Observar cambios DOM (cuando renderTable reescribe tbody)
+      const obs = new MutationObserver(updateScrollIndicators);
+      obs.observe(scrollEl, { childList: true, subtree: true });
+
+      // Drag-to-scroll (mouse)
+      let isDown = false, startX = 0, scrollLeft = 0;
+      scrollEl.addEventListener('mousedown', (e) => {
+        // Evitar drag si el usuario hace click en un botón
+        if (e.target.closest('button, a, input')) return;
+        isDown = true;
+        scrollEl.classList.add('dragging');
+        startX = e.pageX - scrollEl.offsetLeft;
+        scrollLeft = scrollEl.scrollLeft;
+        e.preventDefault();
+      });
+      document.addEventListener('mouseup', () => { isDown = false; scrollEl.classList.remove('dragging'); });
+      document.addEventListener('mousemove', (e) => {
+        if(!isDown) return;
+        const x = e.pageX - scrollEl.offsetLeft;
+        const walk = (x - startX) * 1; // ajustar velocidad si quieres
+        scrollEl.scrollLeft = scrollLeft - walk;
+      });
+
+      // Navegación por teclado: flechas y home/end
+      scrollEl.addEventListener('keydown', (e) => {
+        const key = e.key;
+        if(key === 'ArrowRight') { scrollEl.scrollBy({left: 150, behavior: 'smooth'}); e.preventDefault(); }
+        if(key === 'ArrowLeft')  { scrollEl.scrollBy({left: -150, behavior: 'smooth'}); e.preventDefault(); }
+        if(key === 'Home')      { scrollEl.scrollTo({left: 0, behavior: 'smooth'}); e.preventDefault(); }
+        if(key === 'End')       { scrollEl.scrollTo({left: scrollEl.scrollWidth, behavior: 'smooth'}); e.preventDefault(); }
+      });
+    }
+
+    // bootstrap: init
+    (function init(){
+      document.getElementById('productForm').addEventListener('submit', onSubmitForm);
+      document.getElementById('cancelEdit').addEventListener('click', resetForm);
+      window.selectBranch = function(name){
+        showSideMsg(`Sucursal seleccionada: ${name}`, true);
+      };
+
+      // Inicializar el comportamiento de tabla desplazable
+      setupTableScroll();
+
+      // initial load
+      refreshAndRender();
+    })();
+  </script>
+</body>
+</html>
